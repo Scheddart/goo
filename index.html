@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GoO Elétricos — Scooters elétricas premium. Mobilidade sustentável com design atemporal. Leme/SP." />
+    <meta name="theme-color" content="#f7f7f5" />
+
+    <title>GoO Elétricos — O futuro da mobilidade urbana</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+    <!-- ========== PRELOADER ========== -->
+    <div class="preloader" id="preloader">
+        <div class="preloader__inner">
+            <div class="preloader__logo">
+                <span class="preloader__logo-text">GoO</span>
+                <div class="preloader__ring"></div>
+            </div>
+            <div class="preloader__bar">
+                <div class="preloader__progress" id="preloaderProgress"></div>
+            </div>
+            <div class="preloader__label" id="preloaderLabel">Carregando experiência</div>
+        </div>
+    </div>
+
+    <!-- ========== NAV ========== -->
+    <header class="nav" id="nav">
+        <div class="nav__inner">
+            <a href="#" class="nav__brand">
+                <span class="nav__brand-mark">
+                    <span class="nav__petal nav__petal--1"></span>
+                    <span class="nav__petal nav__petal--2"></span>
+                    <span class="nav__petal nav__petal--3"></span>
+                    <span class="nav__petal nav__petal--4"></span>
+                    <span class="nav__petal nav__petal--5"></span>
+                    <span class="nav__petal nav__petal--6"></span>
+                </span>
+                <span class="nav__brand-text">GoO<span>Elétricos</span></span>
+            </a>
+
+            <nav class="nav__menu">
+                <a href="#modelos" class="nav__link">Modelos</a>
+                <a href="#viewer" class="nav__link">Vista 360°</a>
+                <a href="#tecnologia" class="nav__link">Tecnologia</a>
+                <a href="#sustentabilidade" class="nav__link">Sustentabilidade</a>
+                <a href="#contato" class="nav__link">Contato</a>
+            </nav>
+
+            <a href="#contato" class="nav__cta">
+                <span>Agendar test ride</span>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+
+            <button class="nav__burger" id="navBurger" aria-label="Menu">
+                <span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========== HERO — FRAME SEQUENCE ========== -->
+    <section class="hero" id="hero">
+        <div class="hero__sequence">
+            <canvas id="heroCanvas" class="hero__canvas"></canvas>
+            <div class="hero__placeholder" id="heroPlaceholder">
+                <div class="hero__placeholder-text">
+                    <span class="hero__placeholder-eyebrow">Aguardando frames</span>
+                    <span class="hero__placeholder-main">Sequência cinematográfica</span>
+                    <span class="hero__placeholder-sub">A animação de revelação da scooter será exibida aqui</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero__content">
+            <div class="hero__eyebrow">
+                <span class="hero__eyebrow-dot"></span>
+                <span>Coleção 2026 · Leme · SP</span>
+            </div>
+
+            <h1 class="hero__title">
+                <span class="hero__title-line">A energia</span>
+                <span class="hero__title-line"><em>que move</em></span>
+                <span class="hero__title-line">o amanhã.</span>
+            </h1>
+
+            <p class="hero__subtitle">
+                Scooters elétricas com design atemporal, autonomia inteligente e silêncio absoluto. Feitas para quem entende que mobilidade é estilo de vida.
+            </p>
+
+            <div class="hero__actions">
+                <a href="#viewer" class="btn btn--primary">
+                    <span>Explorar em 360°</span>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                </a>
+                <a href="#modelos" class="btn btn--ghost">
+                    <span>Ver modelos</span>
+                </a>
+            </div>
+
+            <div class="hero__meta">
+                <div class="hero__meta-item">
+                    <span class="hero__meta-num">1000<sub>W</sub></span>
+                    <span class="hero__meta-label">Motor self-propelled</span>
+                </div>
+                <div class="hero__meta-item">
+                    <span class="hero__meta-num">0<sub>dB</sub></span>
+                    <span class="hero__meta-label">Silêncio elétrico</span>
+                </div>
+                <div class="hero__meta-item">
+                    <span class="hero__meta-num">100<sub>%</sub></span>
+                    <span class="hero__meta-label">Emissões zero</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero__scroll-hint">
+            <span>role para revelar</span>
+            <div class="hero__scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- ========== MARQUEE ========== -->
+    <section class="marquee" aria-hidden="true">
+        <div class="marquee__track">
+            <span>Design atemporal</span>
+            <span class="marquee__dot"></span>
+            <span>Motor 1000W</span>
+            <span class="marquee__dot"></span>
+            <span>Homologação completa</span>
+            <span class="marquee__dot"></span>
+            <span>Bateria removível</span>
+            <span class="marquee__dot"></span>
+            <span>Zero emissões</span>
+            <span class="marquee__dot"></span>
+            <span>Coleção 2026</span>
+            <span class="marquee__dot"></span>
+            <span>Design atemporal</span>
+            <span class="marquee__dot"></span>
+            <span>Motor 1000W</span>
+            <span class="marquee__dot"></span>
+            <span>Homologação completa</span>
+            <span class="marquee__dot"></span>
+            <span>Bateria removível</span>
+            <span class="marquee__dot"></span>
+            <span>Zero emissões</span>
+            <span class="marquee__dot"></span>
+            <span>Coleção 2026</span>
+            <span class="marquee__dot"></span>
+        </div>
+    </section>
+
+    <!-- ========== INTRO / MANIFESTO ========== -->
+    <section class="manifesto" id="tecnologia">
+        <div class="manifesto__inner">
+            <span class="section-eyebrow">
+                <span class="section-eyebrow-line"></span>
+                Manifesto
+            </span>
+            <h2 class="manifesto__title">
+                Não é só uma <em>scooter</em>. É uma declaração de como você se move pelo mundo.
+            </h2>
+            <p class="manifesto__text">
+                A GoO nasce em Leme com uma convicção simples: a mobilidade urbana precisa ser silenciosa, elegante e responsável. Cada detalhe é desenhado para durar — do design retrô-contemporâneo aos componentes elétricos de última geração. Você não compra apenas um veículo. Você assina um manifesto.
+            </p>
+        </div>
+    </section>
+
+    <!-- ========== 3D VIEWER ========== -->
+    <section class="viewer" id="viewer">
+        <div class="viewer__header">
+            <span class="section-eyebrow">
+                <span class="section-eyebrow-line"></span>
+                Experiência 360°
+            </span>
+            <h2 class="viewer__title">
+                Gire. Inspecione. <em>Apaixone-se.</em>
+            </h2>
+            <p class="viewer__subtitle">
+                Arraste para girar. Pince para aproximar. Cada curva, cada detalhe — projetado milímetro a milímetro.
+            </p>
+        </div>
+
+        <div class="viewer__stage" data-lenis-prevent>
+            <div class="viewer__loader" id="viewerLoader">
+                <div class="viewer__loader-ring"></div>
+                <span>Preparando o modelo</span>
+            </div>
+
+            <canvas id="viewerCanvas" class="viewer__canvas" data-lenis-prevent></canvas>
+
+            <div class="viewer__controls">
+                <div class="viewer__hint">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M12 3v18M3 12h18M5.5 5.5l13 13M18.5 5.5l-13 13"/>
+                    </svg>
+                    <span>Arraste para girar</span>
+                </div>
+                <div class="viewer__hint">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <circle cx="11" cy="11" r="7"/>
+                        <path d="M21 21l-4.3-4.3M8 11h6M11 8v6"/>
+                    </svg>
+                    <span>Scroll para zoom</span>
+                </div>
+            </div>
+
+            <div class="viewer__badge">
+                <span class="viewer__badge-num">01</span>
+                <span class="viewer__badge-label">Modelo Vintage<br/>Edição 2026</span>
+            </div>
+        </div>
+
+        <div class="viewer__specs">
+            <div class="viewer__spec">
+                <span class="viewer__spec-label">Motor</span>
+                <span class="viewer__spec-value">1000W Brushless</span>
+            </div>
+            <div class="viewer__spec">
+                <span class="viewer__spec-label">Autonomia</span>
+                <span class="viewer__spec-value">Até 80km</span>
+            </div>
+            <div class="viewer__spec">
+                <span class="viewer__spec-label">Carga</span>
+                <span class="viewer__spec-value">4 a 6 horas</span>
+            </div>
+            <div class="viewer__spec">
+                <span class="viewer__spec-label">Velocidade</span>
+                <span class="viewer__spec-value">50 km/h</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FEATURES GRID ========== -->
+    <section class="features">
+        <div class="features__header">
+            <span class="section-eyebrow">
+                <span class="section-eyebrow-line"></span>
+                Engenharia
+            </span>
+            <h2 class="features__title">
+                Cada componente, <em>uma decisão pensada.</em>
+            </h2>
+        </div>
+
+        <div class="features__grid">
+            <article class="feature">
+                <div class="feature__num">01</div>
+                <h3 class="feature__title">Motor self-propelled<br/>1000W</h3>
+                <p class="feature__text">Aceleração linear, torque generoso. Performance urbana sem compromisso com o conforto.</p>
+            </article>
+
+            <article class="feature feature--accent-1">
+                <div class="feature__num">02</div>
+                <h3 class="feature__title">Bateria removível<br/>de lítio</h3>
+                <p class="feature__text">Recarregue dentro de casa. Tecnologia de ponta para autonomia real no dia a dia.</p>
+            </article>
+
+            <article class="feature feature--accent-2">
+                <div class="feature__num">03</div>
+                <h3 class="feature__title">Homologação<br/>completa</h3>
+                <p class="feature__text">Linha 100% regularizada para emplacamento. Você pilota com a tranquilidade que merece.</p>
+            </article>
+
+            <article class="feature feature--accent-3">
+                <div class="feature__num">04</div>
+                <h3 class="feature__title">Design<br/>atemporal</h3>
+                <p class="feature__text">Inspiração retrô, engenharia moderna. Um clássico que nunca sai de moda.</p>
+            </article>
+
+            <article class="feature feature--accent-4">
+                <div class="feature__num">05</div>
+                <h3 class="feature__title">Display<br/>inteligente</h3>
+                <p class="feature__text">Informações claras, intuitivas. Velocidade, bateria, autonomia — tudo no lugar certo.</p>
+            </article>
+
+            <article class="feature feature--accent-5">
+                <div class="feature__num">06</div>
+                <h3 class="feature__title">Suporte<br/>vitalício</h3>
+                <p class="feature__text">Peças, manutenção e revenda. Uma rede que cresce junto com você.</p>
+            </article>
+        </div>
+    </section>
+
+    <!-- ========== MODELS ========== -->
+    <section class="models" id="modelos">
+        <div class="models__header">
+            <span class="section-eyebrow">
+                <span class="section-eyebrow-line"></span>
+                Coleção 2026
+            </span>
+            <h2 class="models__title">
+                Três expressões. <em>Um mesmo manifesto.</em>
+            </h2>
+        </div>
+
+        <div class="models__grid">
+            <article class="model model--1">
+                <div class="model__image">
+                    <div class="model__bg"></div>
+                    <img src="assets/images/scooter-vintage-frame91.png" alt="GoO Vintage Cream — scooter elétrica branca estilo retrô" class="model__photo model__photo--vintage" loading="lazy" />
+                </div>
+                <div class="model__info">
+                    <span class="model__tag">Heritage</span>
+                    <h3 class="model__name">Vintage Cream</h3>
+                    <p class="model__text">A elegância clássica reinterpretada. Branco pérola, detalhes em couro caramelo.</p>
+                    <a href="#contato" class="model__link">
+                        <span>Saiba mais</span>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
+            </article>
+
+            <article class="model model--2">
+                <div class="model__image">
+                    <div class="model__bg"></div>
+                    <img src="assets/images/scooter-urban-tan.jpg" alt="GoO City Pulse — scooter elétrica urbana cor areia" class="model__photo" loading="lazy" />
+                </div>
+                <div class="model__info">
+                    <span class="model__tag">Urbana</span>
+                    <h3 class="model__name">City Pulse</h3>
+                    <p class="model__text">Linhas afiadas, postura urbana. Para quem cruza a cidade com personalidade.</p>
+                    <a href="#contato" class="model__link">
+                        <span>Saiba mais</span>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
+            </article>
+
+            <article class="model model--3">
+                <div class="model__image">
+                    <div class="model__bg"></div>
+                    <img src="assets/images/scooter-chopper-teal.jpg" alt="GoO Sprint Edition — scooter elétrica chopper turquesa" class="model__photo" loading="lazy" />
+                </div>
+                <div class="model__info">
+                    <span class="model__tag">Performance</span>
+                    <h3 class="model__name">Sprint Edition</h3>
+                    <p class="model__text">Mais potência, mais alcance. A escolha de quem não aceita meio-termo.</p>
+                    <a href="#contato" class="model__link">
+                        <span>Saiba mais</span>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- ========== SUSTAINABILITY ========== -->
+    <section class="sustainability" id="sustentabilidade">
+        <div class="sustainability__inner">
+            <div class="sustainability__visual">
+                <div class="sustainability__orb"></div>
+                <div class="sustainability__orb sustainability__orb--2"></div>
+                <div class="sustainability__orb sustainability__orb--3"></div>
+                <img src="assets/images/scooter-urban-tan.jpg" alt="Scooter elétrica GoO" class="sustainability__photo" loading="lazy" />
+            </div>
+
+            <div class="sustainability__content">
+                <span class="section-eyebrow section-eyebrow--light">
+                    <span class="section-eyebrow-line"></span>
+                    Impacto
+                </span>
+                <h2 class="sustainability__title">
+                    Mover-se sem deixar <em>rastro.</em>
+                </h2>
+                <p class="sustainability__text">
+                    Cada GoO nas ruas é uma decisão a favor do ar mais limpo, das cidades mais silenciosas e do futuro mais leve. Mobilidade não precisa custar o planeta.
+                </p>
+
+                <div class="sustainability__stats">
+                    <div class="sustainability__stat">
+                        <span class="sustainability__stat-num">-92<sup>%</sup></span>
+                        <span class="sustainability__stat-label">Menos emissões que motos a combustão</span>
+                    </div>
+                    <div class="sustainability__stat">
+                        <span class="sustainability__stat-num">R$ 0,12</span>
+                        <span class="sustainability__stat-label">Custo médio por km rodado</span>
+                    </div>
+                    <div class="sustainability__stat">
+                        <span class="sustainability__stat-num">10<sup>x</sup></span>
+                        <span class="sustainability__stat-label">Mais econômica no longo prazo</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== CTA / CONTACT ========== -->
+    <section class="cta" id="contato">
+        <div class="cta__inner">
+            <span class="section-eyebrow">
+                <span class="section-eyebrow-line"></span>
+                Pronto?
+            </span>
+            <h2 class="cta__title">
+                Sua próxima jornada<br/>começa <em>com um clique.</em>
+            </h2>
+            <p class="cta__text">
+                Agende um test ride na nossa loja em Leme. Conheça os modelos pessoalmente, sinta a aceleração, escute o silêncio.
+            </p>
+
+            <div class="cta__actions">
+                <a href="https://wa.me/5519998989589" target="_blank" rel="noopener" class="btn btn--primary btn--large">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.6.1-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-1.6-.8-2.7-1.4-3.7-3.2-.3-.5.3-.5.8-1.5.1-.2.1-.4 0-.5 0-.1-.6-1.5-.9-2.1-.2-.5-.5-.5-.6-.5h-.5c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.3 3.1c.2.2 2.2 3.4 5.3 4.7 2 .8 2.7.9 3.7.8.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.2-.2-.5-.3M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 4.9L2 22l5.3-1.4c1.4.7 2.9 1.1 4.6 1.1 5.5 0 10-4.5 10-10S17.5 2 12 2"/></svg>
+                    <span>Falar no WhatsApp</span>
+                </a>
+                <a href="tel:+5519998989589" class="btn btn--ghost btn--large">
+                    <span>(19) 99898-9589</span>
+                </a>
+            </div>
+
+            <div class="cta__contact">
+                <div class="cta__contact-item">
+                    <span class="cta__contact-label">Endereço</span>
+                    <span class="cta__contact-value">Rua Padre Julião, 765<br/>Leme · SP</span>
+                </div>
+                <div class="cta__contact-item">
+                    <span class="cta__contact-label">Instagram</span>
+                    <a href="https://www.instagram.com/gooeletricos_leme/" target="_blank" rel="noopener" class="cta__contact-value cta__contact-value--link">@gooeletricos_leme</a>
+                </div>
+                <div class="cta__contact-item">
+                    <span class="cta__contact-label">Website</span>
+                    <a href="https://gooeletricos.com.br/" target="_blank" rel="noopener" class="cta__contact-value cta__contact-value--link">gooeletricos.com.br</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="footer">
+        <div class="footer__inner">
+            <div class="footer__brand">
+                <span class="footer__mark">
+                    <span class="nav__petal nav__petal--1"></span>
+                    <span class="nav__petal nav__petal--2"></span>
+                    <span class="nav__petal nav__petal--3"></span>
+                    <span class="nav__petal nav__petal--4"></span>
+                    <span class="nav__petal nav__petal--5"></span>
+                    <span class="nav__petal nav__petal--6"></span>
+                </span>
+                <span class="footer__brand-text">GoO Elétricos</span>
+            </div>
+            <p class="footer__tagline">A GoO é o futuro.</p>
+            <p class="footer__copy">© 2026 GoO Elétricos. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- ========== SCRIPTS ========== -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+
+    <script src="js/app.js"></script>
+    <script type="module" src="js/viewer.js"></script>
+    <script src="js/frame-sequence.js"></script>
+
+</body>
+</html>
