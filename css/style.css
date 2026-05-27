@@ -1714,12 +1714,15 @@ em {
         font-size: clamp(44px, 12vw, 64px);
     }
 
+    /* On phones the 3 stat items overlap with the scroll hint and crowd
+       the hero. Keep them on tablet+, hide on phone — the scroll hint is
+       the only piece of the footer that matters here. */
     .hero__meta {
-        gap: 28px;
+        display: none;
     }
 
-    .hero__meta-num {
-        font-size: 32px;
+    .hero__scroll-hint {
+        margin-top: 24px;
     }
 
     .hero__actions {

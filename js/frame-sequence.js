@@ -25,8 +25,9 @@
         // Probe batch size (parallel)
         probeBatch: 32,
         fit: 'cover',
-        // Mobile gets shorter sequence so hero exits viewport before frame ends.
-        scrollLength: isMobile ? 1.0 : 2.0,
+        // Mobile gets shorter sequence so hero exits viewport before frame ends,
+        // but not so short that flick-scrolling skips most frames.
+        scrollLength: isMobile ? 1.5 : 2.0,
         pin: true,
         bottomBand: {
             enabled: true,
@@ -295,10 +296,10 @@
             end: () => `+=${window.innerHeight * CONFIG.scrollLength}`,
             pin: CONFIG.pin,
             pinSpacing: true,
-            // GPU transform pin on mobile = smoother on touch scroll
-            pinType: isMobile ? 'transform' : 'fixed',
+            // Default 'fixed' pin works reliably across mobile browsers.
+            // 'transform' caused the canvas to stop advancing on touch.
             anticipatePin: 1,
-            scrub: isMobile ? 0.4 : 0.8, // snappier on mobile
+            scrub: isMobile ? 0.5 : 0.8,
             invalidateOnRefresh: true,
             onUpdate: (self) => {
                 if (state.count === 0) return;
