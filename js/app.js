@@ -103,7 +103,9 @@
     };
 
     /* ============================================
-       PRELOADER
+       PRELOADER — driven by real load progress
+       Hides as soon as the first hero frame is visible
+       (no artificial delays, no waiting for window.load).
        ============================================ */
     const initPreloader = () => {
         const preloader = document.getElementById('preloader');
@@ -112,6 +114,7 @@
 
         if (!preloader || !progress) return;
 
+        let done = false;
         let pct = 0;
         const messages = [
             'Carregando experiência',
@@ -119,35 +122,44 @@
             'Quase lá',
         ];
 
+        // Lightweight progress animation runs until first frame fires
         const tick = () => {
-            pct += Math.random() * 8 + 2;
-            if (pct > 95) pct = 95;
+            if (done) return;
+            pct += Math.random() * 6 + 3;
+            if (pct > 92) pct = 92;
             progress.style.width = `${pct}%`;
-
-            if (pct < 95) {
-                if (pct > 60 && label) label.textContent = messages[2];
-                else if (pct > 30 && label) label.textContent = messages[1];
-                setTimeout(tick, 180);
-            }
+            if (pct > 60 && label) label.textContent = messages[2];
+            else if (pct > 30 && label) label.textContent = messages[1];
+            setTimeout(tick, 120);
         };
-
         tick();
 
         const completeLoader = () => {
+            if (done) return;
+            done = true;
             progress.style.width = '100%';
             if (label) label.textContent = 'Pronto';
+            // Brief flash so the 100% is visible, then reveal
             setTimeout(() => {
                 preloader.classList.add('is-done');
                 document.body.classList.add('is-loaded');
                 introAnimations();
-            }, 500);
+            }, 200);
         };
 
-        if (document.readyState === 'complete') {
-            setTimeout(completeLoader, 1200);
+        // Primary trigger: first hero frame rendered to canvas
+        document.addEventListener('frame-sequence:first-frame', completeLoader, { once: true });
+
+        // Fallback 1: DOMContentLoaded + 600ms (in case no frames exist yet)
+        const fallbackAfterDOM = () => setTimeout(completeLoader, 600);
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', fallbackAfterDOM);
         } else {
-            window.addEventListener('load', () => setTimeout(completeLoader, 1200));
+            fallbackAfterDOM();
         }
+
+        // Fallback 2: hard 4s cap so the preloader can never trap the user
+        setTimeout(completeLoader, 4000);
     };
 
     /* ============================================
@@ -202,6 +214,10 @@
        ============================================ */
     const initReveals = () => {
         if (!window.gsap || !window.ScrollTrigger) return;
+
+        const isMobileViewport =
+            matchMedia('(max-width: 768px)').matches ||
+            matchMedia('(hover: none)').matches;
 
         const titles = document.querySelectorAll(
             '.manifesto__title, .viewer__title, .features__title, .models__title, .sustainability__title, .cta__title'
@@ -328,18 +344,22 @@
             ease: 'power3.out',
         });
 
-        /* Hero content parallax */
-        gsap.to('.hero__content', {
-            y: -80,
-            opacity: 0.4,
-            ease: 'none',
-            scrollTrigger: {
-                trigger: '.hero',
-                start: 'top top',
-                end: 'bottom top',
-                scrub: 1.5,
-            },
-        });
+        /* Hero content parallax — desktop only.
+           On mobile this scrub overlaps the pinned frame-sequence scrub
+           and causes scroll jitter, so we skip it. */
+        if (!isMobileViewport) {
+            gsap.to('.hero__content', {
+                y: -80,
+                opacity: 0.4,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: '.hero',
+                    start: 'top top',
+                    end: 'bottom top',
+                    scrub: 1.5,
+                },
+            });
+        }
     };
 
     /* ============================================

@@ -89,6 +89,15 @@ body {
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
     font-feature-settings: 'ss01', 'cv11';
+    /* Allow native vertical scroll without browser hesitation while keeping
+       horizontal gestures available for the 3D viewer (pinch/rotate). */
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Only the 3D viewer canvas owns full touch (rotate/zoom). */
+#viewerCanvas {
+    touch-action: none;
 }
 
 img, canvas, svg {
@@ -1769,6 +1778,38 @@ em {
 
     .sustainability__stat-num {
         font-size: 36px;
+    }
+}
+
+/* ============================================
+   MOBILE PERFORMANCE — disable heavy decorative
+   effects that compete with the touch scroll thread.
+   ============================================ */
+@media (max-width: 768px), (hover: none) {
+    /* Pause the rotating viewer aura — its blur(80px) is GPU-expensive on
+       phones and was contributing to scroll jitter on the hero/viewer area. */
+    .viewer__stage::before {
+        animation: none !important;
+        opacity: 0.5;
+        filter: blur(60px);
+    }
+
+    /* Lighter sustainability float animation on mobile */
+    .sustainability__image img,
+    .sustainability__photo img {
+        animation: none !important;
+    }
+
+    /* GPU-friendly canvas; helps the pinned hero stay smooth on touch. */
+    #heroCanvas {
+        will-change: transform;
+        transform: translateZ(0);
+    }
+
+    /* Tighten the hero on mobile so the animation completes
+       comfortably within one viewport-and-a-bit of scroll. */
+    .hero {
+        min-height: 100svh;
     }
 }
 

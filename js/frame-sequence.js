@@ -12,31 +12,29 @@
 (() => {
     'use strict';
 
+    // Mobile detection — used to tune scroll length, batching, and DPR
+    const isMobile =
+        matchMedia('(max-width: 768px)').matches ||
+        matchMedia('(hover: none)').matches;
+
     const CONFIG = {
         folder: 'assets/frames/',
-        // Name pattern. {n} = number, padded to namePadding.
         namePattern: 'ezgif-frame-{n}.png',
         namePadding: 3,
-        // Maximum frames to attempt (loader will stop earlier when files 404)
         maxFrames: 300,
-        // Probing strategy: how many sequential 404s before stopping
-        maxConsecutive404: 2,
-        // Object-fit behavior — 'cover' fills the entire hero (preferred for premium look)
+        // Probe batch size (parallel)
+        probeBatch: 32,
         fit: 'cover',
-        // Scroll multiplier: how long (in viewport heights) the sequence plays.
-        // Lower = faster animation per scroll distance.
-        scrollLength: 2.0,
-        // Whether to keep canvas pinned during sequence
+        // Mobile gets shorter sequence so hero exits viewport before frame ends.
+        scrollLength: isMobile ? 1.0 : 2.0,
         pin: true,
-        // Full-width bottom gradient — cinematic darkening across the entire
-        // base of the hero. Hides the Kling AI watermark and adds depth.
         bottomBand: {
             enabled: true,
-            startY: 0.55,         // gradient begins here (0% opacity)
-            midY: 0.78,           // mid stop
-            midOpacity: 0.30,     // opacity at mid stop
-            endOpacity: 0.88,     // opacity at very bottom
-            color: '0, 0, 0',     // rgb darkening color
+            startY: 0.55,
+            midY: 0.78,
+            midOpacity: 0.30,
+            endOpacity: 0.88,
+            color: '0, 0, 0',
         },
     };
 
@@ -47,7 +45,8 @@
     if (!canvas || !heroSection) return;
 
     const ctx = canvas.getContext('2d', { alpha: true });
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // Lower DPR on mobile to reduce GPU/memory cost
+    const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
 
     /* ============================================
        BUILD FRAME URL
@@ -58,29 +57,9 @@
     };
 
     /* ============================================
-       PROBE — detect how many frames exist
-       Tries loading frames sequentially. Stops when N consecutive 404s.
+       PROBE — detect how many frames exist (parallel batches)
+       Much faster than sequential: ~3 round-trips instead of 91.
        ============================================ */
-    const probeFrameCount = async () => {
-        let count = 0;
-        let consecutiveFails = 0;
-
-        for (let i = 1; i <= CONFIG.maxFrames; i++) {
-            const url = buildUrl(i);
-            const exists = await frameExists(url);
-            if (exists) {
-                count = i;
-                consecutiveFails = 0;
-            } else {
-                consecutiveFails++;
-                if (consecutiveFails >= CONFIG.maxConsecutive404) {
-                    break;
-                }
-            }
-        }
-        return count;
-    };
-
     const frameExists = (url) => {
         return new Promise((resolve) => {
             const img = new Image();
@@ -90,17 +69,55 @@
         });
     };
 
+    const probeFrameCount = async () => {
+        let count = 0;
+        const batch = CONFIG.probeBatch;
+
+        for (let start = 1; start <= CONFIG.maxFrames; start += batch) {
+            const end = Math.min(start + batch - 1, CONFIG.maxFrames);
+            const checks = [];
+            for (let i = start; i <= end; i++) {
+                checks.push(frameExists(buildUrl(i)));
+            }
+            const results = await Promise.all(checks);
+            const firstFail = results.indexOf(false);
+            if (firstFail === -1) {
+                count = end;
+            } else {
+                count = start + firstFail - 1;
+                return count;
+            }
+        }
+        return count;
+    };
+
     /* ============================================
-       LOAD ALL FRAMES (preload images)
-       Loads in batches to avoid blocking.
+       LOAD A SINGLE FRAME
        ============================================ */
-    const loadFrames = async (count, onProgress) => {
-        const images = new Array(count);
-        const batchSize = 12;
+    const loadOne = (i) => new Promise((resolve) => {
+        const img = new Image();
+        img.decoding = 'async';
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = buildUrl(i);
+    });
+
+    /* ============================================
+       LOAD ALL FRAMES IN BACKGROUND BATCHES
+       Allows scroll control to start before all frames are ready.
+       ============================================ */
+    const loadFrames = async (count, images, onProgress) => {
+        const batchSize = isMobile ? 6 : 12;
         let loaded = 0;
 
-        const loadOne = (i) => new Promise((resolve) => {
+        const loadInto = (i) => new Promise((resolve) => {
+            if (images[i]) {
+                loaded++;
+                if (onProgress) onProgress(loaded / count);
+                return resolve();
+            }
             const img = new Image();
+            img.decoding = 'async';
             img.onload = () => {
                 images[i] = img;
                 loaded++;
@@ -118,7 +135,7 @@
         for (let batch = 0; batch < count; batch += batchSize) {
             const promises = [];
             for (let k = batch; k < Math.min(batch + batchSize, count); k++) {
-                promises.push(loadOne(k));
+                promises.push(loadInto(k));
             }
             await Promise.all(promises);
         }
@@ -140,9 +157,6 @@
 
     /* ============================================
        RENDER A FRAME (with object-fit behavior)
-       Includes optional watermark masking: clones a strip from
-       above the watermark zone down over it, blending with the
-       gradient backdrop of the source frames.
        ============================================ */
     const renderFrame = (img) => {
         if (!img) return;
@@ -186,11 +200,6 @@
 
         ctx.drawImage(img, dx, dy, dw, dh);
 
-        // ============================================
-        // FULL-WIDTH BOTTOM GRADIENT
-        // Cinematic darkening across the entire base, hiding the
-        // Kling AI watermark naturally as part of the vignette.
-        // ============================================
         const bb = CONFIG.bottomBand;
         if (bb && bb.enabled) {
             const startY = ch * bb.startY;
@@ -213,10 +222,6 @@
        ============================================ */
     const init = async () => {
         resizeCanvas();
-        window.addEventListener('resize', () => {
-            resizeCanvas();
-            if (state.currentImage) renderFrame(state.currentImage);
-        });
 
         const state = {
             frames: [],
@@ -225,40 +230,54 @@
             currentImage: null,
         };
 
-        // Step 1: probe
-        const count = await probeFrameCount();
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            if (state.currentImage) renderFrame(state.currentImage);
+        });
 
-        if (count === 0) {
-            // No frames yet — show placeholder, do not initialize scroll trigger.
-            // When frames are added later, simply reload the page.
+        // ============================================
+        // STEP 1: Load FIRST frame immediately
+        // Renders and hides preloader before probing/loading the rest.
+        // ============================================
+        const first = await loadOne(1);
+        if (!first) {
             console.info(
                 '[Frame Sequence] No frames detected in', CONFIG.folder,
-                '— place files named "' + CONFIG.namePattern.replace('{n}', '0001') + '" etc. and reload.'
+                '— place files named "' + CONFIG.namePattern.replace('{n}', '001') + '" etc. and reload.'
             );
             return;
         }
 
-        // Frames detected → hide placeholder
+        state.frames[0] = first;
+        state.currentImage = first;
+        canvas.classList.add('is-ready');
+        renderFrame(first);
+
         if (placeholder) placeholder.classList.add('is-hidden');
 
-        console.info('[Frame Sequence] Detected', count, 'frames. Preloading...');
+        // Signal preloader: first frame is visible
+        document.dispatchEvent(new CustomEvent('frame-sequence:first-frame'));
 
-        // Step 2: load
-        const images = await loadFrames(count, (p) => {
-            // Could update preloader progress, but main preloader has its own logic
-        });
-
-        state.frames = images;
+        // ============================================
+        // STEP 2: Probe total count (parallel)
+        // ============================================
+        const count = await probeFrameCount();
         state.count = count;
-        state.currentImage = images[0];
+        console.info('[Frame Sequence]', count, 'frames detected. Loading in background…');
 
-        canvas.classList.add('is-ready');
-        renderFrame(images[0]);
-
-        console.info('[Frame Sequence] Ready. Initializing scroll...');
-
-        // Step 3: hook into ScrollTrigger
+        // ============================================
+        // STEP 3: Hook into ScrollTrigger NOW
+        // ============================================
         initScrollControl(state);
+
+        // ============================================
+        // STEP 4: Load remaining frames in background
+        // ============================================
+        loadFrames(count, state.frames, (p) => {
+            if (p >= 1) {
+                console.info('[Frame Sequence] All frames loaded.');
+            }
+        });
     };
 
     /* ============================================
@@ -270,21 +289,27 @@
             return;
         }
 
-        const progress = { value: 0 };
-
-        // Create a scroll trigger that pins the hero and scrubs frame index
         ScrollTrigger.create({
             trigger: heroSection,
             start: 'top top',
-            end: `+=${window.innerHeight * CONFIG.scrollLength}`,
+            end: () => `+=${window.innerHeight * CONFIG.scrollLength}`,
             pin: CONFIG.pin,
             pinSpacing: true,
-            scrub: 0.8, // lower = snappier response; still smooth/cinematic
+            // GPU transform pin on mobile = smoother on touch scroll
+            pinType: isMobile ? 'transform' : 'fixed',
+            anticipatePin: 1,
+            scrub: isMobile ? 0.4 : 0.8, // snappier on mobile
+            invalidateOnRefresh: true,
             onUpdate: (self) => {
-                const idx = Math.min(
+                if (state.count === 0) return;
+                const targetIdx = Math.min(
                     state.count - 1,
                     Math.floor(self.progress * (state.count - 1))
                 );
+                // Fall back to nearest loaded frame at or below target index
+                let idx = targetIdx;
+                while (idx > 0 && !state.frames[idx]) idx--;
+
                 if (idx !== state.currentIndex && state.frames[idx]) {
                     state.currentIndex = idx;
                     state.currentImage = state.frames[idx];
@@ -293,7 +318,6 @@
             },
         });
 
-        // Refresh on full load
         window.addEventListener('load', () => ScrollTrigger.refresh());
     };
 
