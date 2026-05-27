@@ -34,7 +34,9 @@
             startY: 0.55,
             midY: 0.78,
             midOpacity: 0.30,
-            endOpacity: 0.88,
+            // Pure black at the very bottom so the canvas blends seamlessly
+            // into the dark page background when the pin releases.
+            endOpacity: 1.0,
             color: '0, 0, 0',
         },
     };
@@ -158,7 +160,12 @@
 
     /* ============================================
        RENDER A FRAME (with object-fit behavior)
+       Gradient + dimensions cached between renders; recomputed
+       only when the canvas resizes (invalidateRenderCache).
        ============================================ */
+    let cache = { w: 0, h: 0, gradient: null, bgColor: '#0a0a0a' };
+    const invalidateRenderCache = () => { cache.w = 0; cache.h = 0; };
+
     const renderFrame = (img) => {
         if (!img) return;
         const cw = canvas.width;
@@ -166,14 +173,45 @@
         const iw = img.naturalWidth;
         const ih = img.naturalHeight;
 
-        ctx.clearRect(0, 0, cw, ch);
+        // Recompute cached gradient only on size change
+        if (cw !== cache.w || ch !== cache.h) {
+            cache.w = cw;
+            cache.h = ch;
+            const bb = CONFIG.bottomBand;
+            if (bb && bb.enabled) {
+                const startY = ch * bb.startY;
+                const endY = ch;
+                const gradient = ctx.createLinearGradient(0, startY, 0, endY);
+                gradient.addColorStop(0, `rgba(${bb.color}, 0)`);
+                const midStop = (ch * bb.midY - startY) / (endY - startY);
+                gradient.addColorStop(midStop, `rgba(${bb.color}, ${bb.midOpacity})`);
+                gradient.addColorStop(1, `rgba(${bb.color}, ${bb.endOpacity})`);
+                cache.gradient = gradient;
+            } else {
+                cache.gradient = null;
+            }
+        }
+
+        // Fill dark backdrop FIRST — covers any letterbox area on mobile
+        // and means the hero never reveals a light background.
+        ctx.fillStyle = cache.bgColor;
+        ctx.fillRect(0, 0, cw, ch);
 
         const canvasRatio = cw / ch;
         const imgRatio = iw / ih;
 
         let dw, dh, dx, dy;
 
-        if (CONFIG.fit === 'cover') {
+        if (isMobile) {
+            // Mobile: bias toward showing the full scooter horizontally
+            // (fit-width). Any vertical gap becomes the dark backdrop.
+            // Slight 1.08x zoom keeps it feeling immersive, not letterboxed.
+            const fillFactor = 1.08;
+            dw = cw * fillFactor;
+            dh = dw / imgRatio;
+            dx = (cw - dw) / 2;
+            dy = (ch - dh) / 2;
+        } else if (CONFIG.fit === 'cover') {
             if (imgRatio > canvasRatio) {
                 dh = ch;
                 dw = ch * imgRatio;
@@ -201,20 +239,10 @@
 
         ctx.drawImage(img, dx, dy, dw, dh);
 
-        const bb = CONFIG.bottomBand;
-        if (bb && bb.enabled) {
-            const startY = ch * bb.startY;
-            const midY = ch * bb.midY;
-            const endY = ch;
-
-            const gradient = ctx.createLinearGradient(0, startY, 0, endY);
-            gradient.addColorStop(0, `rgba(${bb.color}, 0)`);
-            const midStop = (midY - startY) / (endY - startY);
-            gradient.addColorStop(midStop, `rgba(${bb.color}, ${bb.midOpacity})`);
-            gradient.addColorStop(1, `rgba(${bb.color}, ${bb.endOpacity})`);
-
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, startY, cw, endY - startY);
+        if (cache.gradient) {
+            const startY = ch * CONFIG.bottomBand.startY;
+            ctx.fillStyle = cache.gradient;
+            ctx.fillRect(0, startY, cw, ch - startY);
         }
     };
 
@@ -231,10 +259,18 @@
             currentImage: null,
         };
 
+        // Debounced resize — avoids constantly recomputing the canvas
+        // backing-store during the iOS URL-bar collapse, which was a
+        // major source of the scroll-time jitter.
+        let resizeTimer = null;
         window.addEventListener('resize', () => {
-            resizeCanvas();
-            if (state.currentImage) renderFrame(state.currentImage);
-        });
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                resizeCanvas();
+                invalidateRenderCache();
+                if (state.currentImage) renderFrame(state.currentImage);
+            }, 120);
+        }, { passive: true });
 
         // ============================================
         // STEP 1: Load FIRST frame immediately
@@ -297,8 +333,7 @@
             pin: CONFIG.pin,
             pinSpacing: true,
             // Default 'fixed' pin works reliably across mobile browsers.
-            // 'transform' caused the canvas to stop advancing on touch.
-            anticipatePin: 1,
+            // No anticipatePin — caused a visible pre-pin jump.
             scrub: isMobile ? 0.5 : 0.8,
             invalidateOnRefresh: true,
             onUpdate: (self) => {

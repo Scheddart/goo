@@ -82,7 +82,10 @@ html.lenis body {
 
 body {
     font-family: var(--font-sans);
-    background: var(--bg);
+    /* Dark base color. Each section paints its own background on top,
+       so this only shows in the brief gap when the hero pin releases —
+       killing the white flash that used to bleed through. */
+    background: #0a0a0a;
     color: var(--ink);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
@@ -93,6 +96,10 @@ body {
        horizontal gestures available for the 3D viewer (pinch/rotate). */
     touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
+}
+
+html {
+    background: #0a0a0a;
 }
 
 /* Only the 3D viewer canvas owns full touch (rotate/zoom). */
@@ -415,7 +422,9 @@ em {
     display: flex;
     align-items: center;
     overflow: hidden;
-    background: var(--grad-radial);
+    /* Dark base so that the brief moment between the canvas ending its
+       last frame and the marquee scrolling in shows black, not cream. */
+    background: #0a0a0a;
 }
 
 .hero::before {
