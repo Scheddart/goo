@@ -203,12 +203,15 @@
         let dw, dh, dx, dy;
 
         if (isMobile) {
-            // Mobile: bias toward showing the full scooter horizontally
-            // (fit-width). Any vertical gap becomes the dark backdrop.
-            // Slight 1.08x zoom keeps it feeling immersive, not letterboxed.
-            const fillFactor = 1.08;
-            dw = cw * fillFactor;
-            dh = dw / imgRatio;
+            // Mobile: 'cover' lightly relaxed — the image still fills
+            // almost the whole canvas, just zoomed out enough to reveal
+            // more of the scooter (front wheel to rear) instead of only
+            // the cropped middle strip. Tiny letterbox blends into the
+            // dark backdrop.
+            const coverScale = Math.max(cw / iw, ch / ih);
+            const scale = coverScale * 0.88;
+            dw = iw * scale;
+            dh = ih * scale;
             dx = (cw - dw) / 2;
             dy = (ch - dh) / 2;
         } else if (CONFIG.fit === 'cover') {
