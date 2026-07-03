@@ -19,7 +19,7 @@
 
     const CONFIG = {
         folder: 'assets/frames/',
-        namePattern: 'ezgif-frame-{n}.png',
+        namePattern: 'ezgif-frame-{n}.webp',
         namePadding: 3,
         maxFrames: 300,
         // Probe batch size (parallel)
