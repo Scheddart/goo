@@ -220,7 +220,7 @@
             matchMedia('(hover: none)').matches;
 
         const titles = document.querySelectorAll(
-            '.manifesto__title, .viewer__title, .features__title, .models__title, .sustainability__title, .cta__title'
+            '.manifesto__title, .viewer__title, .features__title, .models__title, .explore__title, .sustainability__title, .cta__title'
         );
 
         titles.forEach((title) => {
@@ -289,6 +289,19 @@
             opacity: 0,
             duration: 1.1,
             stagger: 0.12,
+            ease: 'power3.out',
+        });
+
+        gsap.from('.explore-card', {
+            scrollTrigger: {
+                trigger: '.explore__grid',
+                start: 'top 82%',
+                toggleActions: 'play none none reverse',
+            },
+            y: 60,
+            opacity: 0,
+            duration: 0.9,
+            stagger: 0.1,
             ease: 'power3.out',
         });
 

@@ -508,9 +508,29 @@ em {
     max-width: 280px;
 }
 
+/* Cinematic scrim between the frame canvas and the hero text.
+   Darkens the left column (where the copy sits) and the bottom,
+   so the text stays legible over ANY frame as the sequence plays. */
+.hero__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background:
+        linear-gradient(100deg,
+            rgba(8, 8, 8, 0.66) 0%,
+            rgba(8, 8, 8, 0.42) 26%,
+            rgba(8, 8, 8, 0.12) 48%,
+            rgba(8, 8, 8, 0) 64%),
+        linear-gradient(to top,
+            rgba(8, 8, 8, 0.55) 0%,
+            rgba(8, 8, 8, 0.12) 26%,
+            rgba(8, 8, 8, 0) 46%);
+}
+
 .hero__content {
     position: relative;
-    z-index: 2;
+    z-index: 3;
     max-width: var(--container);
     margin: 0 auto;
     padding: 0 var(--gutter);
@@ -554,10 +574,11 @@ em {
     font-weight: 400;
     line-height: 0.92;
     letter-spacing: -0.02em;
-    color: var(--ink);
+    /* Light text over the cinematic scrim — always readable while scrolling */
+    color: var(--bg-warm);
     margin-bottom: 32px;
     max-width: 880px;
-    text-shadow: 0 2px 24px rgba(250, 248, 243, 0.6);
+    text-shadow: 0 2px 30px rgba(0, 0, 0, 0.55), 0 1px 4px rgba(0, 0, 0, 0.35);
 }
 
 .hero__title-line {
@@ -576,11 +597,11 @@ em {
 .hero__subtitle {
     font-size: clamp(15px, 1.3vw, 18px);
     line-height: 1.6;
-    color: var(--ink);
+    color: rgba(250, 248, 243, 0.92);
     max-width: 480px;
     margin-bottom: 40px;
     font-weight: 450;
-    text-shadow: 0 1px 12px rgba(250, 248, 243, 0.5);
+    text-shadow: 0 1px 20px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 .hero__actions {
@@ -1340,6 +1361,170 @@ em {
 }
 
 /* ============================================
+   EXPLORE / UNIVERSO GoO — brand link cards
+   ============================================ */
+
+.explore {
+    padding: 140px 0;
+    background: var(--bg-deep);
+    position: relative;
+}
+
+.explore__header {
+    max-width: var(--container);
+    margin: 0 auto 56px;
+    padding: 0 var(--gutter);
+    text-align: center;
+}
+
+.explore__title {
+    font-family: var(--font-serif);
+    font-size: clamp(38px, 5.5vw, 72px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-top: 20px;
+}
+
+.explore__title em {
+    background: var(--grad-spectrum);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.explore__subtitle {
+    max-width: 560px;
+    margin: 24px auto 0;
+    font-size: clamp(15px, 1.2vw, 17px);
+    line-height: 1.6;
+    color: var(--ink-soft);
+}
+
+.explore__grid {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 1fr;
+    gap: 20px;
+}
+
+.explore-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 34px 32px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    overflow: hidden;
+    transition: transform 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out), border-color 0.45s var(--ease-out);
+    isolation: isolate;
+}
+
+.explore-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0;
+    background: linear-gradient(135deg, rgba(244, 128, 31, 0.06), rgba(29, 118, 214, 0.06));
+    transition: opacity 0.45s var(--ease-out);
+}
+
+.explore-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--line-strong);
+    box-shadow: 0 24px 50px -20px rgba(26, 26, 26, 0.28);
+}
+
+.explore-card:hover::before {
+    opacity: 1;
+}
+
+/* Featured card (Seja um revendedor) — spans full width on top row */
+.explore-card--feature {
+    grid-column: 1 / -1;
+    background: linear-gradient(120deg, var(--ink) 0%, #232323 100%);
+    color: var(--bg-warm);
+    border-color: transparent;
+    padding: 44px 44px;
+}
+
+.explore-card--feature .explore-card__text {
+    color: rgba(250, 248, 243, 0.72);
+    max-width: 560px;
+}
+
+.explore-card--feature .explore-card__icon {
+    background: rgba(250, 248, 243, 0.1);
+    color: var(--bg-warm);
+}
+
+.explore-card--feature:hover {
+    box-shadow: 0 28px 60px -20px rgba(0, 0, 0, 0.5);
+}
+
+.explore-card__badge {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    border-radius: 100px;
+    background: var(--grad-spectrum);
+    color: #fff;
+}
+
+.explore-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 22px;
+    border-radius: 16px;
+    background: var(--surface-2);
+    color: var(--ink);
+}
+
+.explore-card__title {
+    font-family: var(--font-serif);
+    font-size: 25px;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin-bottom: 12px;
+    color: inherit;
+}
+
+.explore-card__text {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin-bottom: 24px;
+}
+
+.explore-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: auto;
+    font-size: 14px;
+    font-weight: 600;
+    color: inherit;
+    transition: gap 0.3s var(--ease-out);
+}
+
+.explore-card:hover .explore-card__cta {
+    gap: 13px;
+}
+
+/* ============================================
    SUSTAINABILITY
    ============================================ */
 
@@ -1666,6 +1851,10 @@ em {
         grid-template-columns: repeat(2, 1fr);
     }
 
+    .explore__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
     .viewer__specs {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -1756,6 +1945,18 @@ em {
     .features__grid,
     .models__grid {
         grid-template-columns: 1fr;
+    }
+
+    .explore__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .explore-card--feature {
+        padding: 32px 26px;
+    }
+
+    .explore-card {
+        padding: 28px 26px;
     }
 
     .viewer__specs {
